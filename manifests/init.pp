@@ -43,5 +43,4 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       provider  => powershell,
     }
   }
-  notify{"The value is: ${ensure}": }
 }
