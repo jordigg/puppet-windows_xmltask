@@ -33,7 +33,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       command => "
         Try{
           if((Get-ScheduledTask '$taskname') -ne $null){
-            Unregister-ScheduledTask '$taskname' -Confirm:$false
+            Unregister-ScheduledTask -TaskName '$taskname' -Confirm:$false
           }
         }
         Catch{
@@ -43,4 +43,5 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       provider  => powershell,
     }
   }
+  notify{"The value is: ${ensure}": }
 }
