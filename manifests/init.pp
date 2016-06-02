@@ -33,7 +33,6 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       command => "
         Try{
           if((Get-ScheduledTask '$taskname') -ne $null){
-            Remove-ScheduledTask -TaskName '$taskname'
             Unregister-ScheduledTask '$taskname' -Confirm:$false
           }
         }
