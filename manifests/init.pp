@@ -9,6 +9,8 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
     if ($overwrite == true){
       $is_force = '-Force'
     }
+    notify {"\$overwrite = ${overwrite}":}
+    notify {"command = if ('${overwrite}' -eq '${false}') {exit 1}":}
     file {"c:\\Users\\Public\\${temp_filename}.xml":
       ensure             => file,
       source_permissions => 'ignore',
