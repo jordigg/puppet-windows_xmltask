@@ -17,9 +17,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
     exec { "Importing task ${taskname}":
       command  => "
         Try{
-          if((Get-ScheduledTask '${taskname}') -eq ${null}){
-            Register-ScheduledTask -Xml (get-content 'C:\Users\Public\\${temp_filename}.xml' | out-string) -TaskName '${taskname}' ${is_force}
-          }
+          Register-ScheduledTask -Xml (get-content 'C:\Users\Public\\${temp_filename}.xml' | out-string) -TaskName '${taskname}' ${is_force}
           Remove-Item 'c:\Users\Public\\${temp_filename}.xml'
         }
         Catch{
@@ -27,6 +25,10 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
         }
       ",
       provider => powershell,
+      unless   => [
+                    "Get-ScheduledTask '${taskname}'",
+                    "test '${overwrite}' = false",
+                  ]
     }
   }else{
     exec { "Removing task ${taskname}":
