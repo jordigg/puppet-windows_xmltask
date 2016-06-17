@@ -10,7 +10,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       $is_force = '-Force'
     }
     notify {"\$overwrite = ${overwrite}":}
-    notify {"command = if (${overwrite} -eq ${false}) {exit 1} else {code 0}":}
+    notify {"command = if ('${overwrite}' -eq 'false') {exit 0} else {exit 1}":}
     file {"c:\\Users\\Public\\${temp_filename}.xml":
       ensure             => file,
       source_permissions => 'ignore',
@@ -29,7 +29,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       provider => powershell,
       unless   => [
                     "Get-ScheduledTask '${taskname}'",
-                    "if (${overwrite} -eq ${false}) {exit 0} else {exit 1}",
+                    "if ('${overwrite}' -eq 'false') {exit 0} else {exit 1}",
                   ]
     }
   }else{
