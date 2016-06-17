@@ -27,7 +27,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       provider => powershell,
       unless   => [
                     "Get-ScheduledTask '${taskname}'",
-                    "'${overwrite}' -eq '${false}'",
+                    "if ('${overwrite}' -eq '${false}') {exit 1}",
                   ]
     }
   }else{
