@@ -30,17 +30,9 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
     }
   }else{
     exec { "Removing task ${taskname}":
-      command  => "
-        Try{
-          if((Get-ScheduledTask '${taskname}') -ne ${null}){
-            Unregister-ScheduledTask -TaskName '${taskname}' -Confirm:${false}
-          }
-        }
-        Catch{
-          exit 0
-        }
-      ",
+      command  => "Unregister-ScheduledTask -TaskName '${taskname}' -Confirm:${false}",
       provider => powershell,
+      onlyif   => "Get-ScheduledTask '${taskname}'",
     }
   }
 }
