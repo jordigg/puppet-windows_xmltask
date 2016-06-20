@@ -9,12 +9,12 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
     if ($overwrite == true){
       $is_force = '-Force'
     }
-    notify {"\$overwrite = ${overwrite}":}
-    notify {"command = if ('${overwrite}' -eq 'false') {exit 0} else {exit 1}":}
+    notify {"command = if( ((Get-ScheduledTask 'sync-gcloud-tools-share-v1') -eq ${null}) -Or ('${overwrite}' -eq 'true')){ exit 0 }else{ exit 1 }":}
     file {"c:\\Users\\Public\\${temp_filename}.xml":
       ensure             => file,
       source_permissions => 'ignore',
       source             => $xmlfile,
+      onlyif             => "if( ((Get-ScheduledTask 'sync-gcloud-tools-share-v1') -eq ${null}) -Or ('${overwrite}' -eq 'true')){ exit 0 }else{ exit 1 }"
     } ->
     exec { "Importing task ${taskname}":
       command  => "
@@ -27,10 +27,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
         }
       ",
       provider => powershell,
-      unless   => [
-                    "Get-ScheduledTask '${taskname}'",
-                    "if ('${overwrite}' -eq 'true') {exit 1} else {exit 0}",
-                  ]
+      onlyif   => "if( ((Get-ScheduledTask 'sync-gcloud-tools-share-v1') -eq ${null}) -Or ('${overwrite}' -eq 'true')){ exit 0 }else{ exit 1 }"
     }
   }else{
     exec { "Removing task ${taskname}":
