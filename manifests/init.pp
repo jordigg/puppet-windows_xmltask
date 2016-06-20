@@ -4,12 +4,11 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
   }
   $null  = '$null'
   $false = '$false'
-  $temp_filename = fqdn_rand(3000, $taskname)
   if ($ensure == 'present') {
     if ($overwrite == true){
       $is_force = '-Force'
     }
-    file {"C:\\Windows\\Temp\\${temp_filename}.xml":
+    file {"C:\\Windows\\Temp\\${taskname}.xml":
       ensure             => file,
       source_permissions => 'ignore',
       source             => $xmlfile,
@@ -17,7 +16,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
     exec { "Importing task ${taskname}":
       command  => "
         Try{
-          Register-ScheduledTask -Xml (get-content 'C:\Windows\Temp\${temp_filename}.xml' | out-string) -TaskName '${taskname}' ${is_force}
+          Register-ScheduledTask -Xml (get-content 'C:\Windows\Temp\${taskname}.xml' | out-string) -TaskName '${taskname}' ${is_force}
         }
         Catch{
           exit 0
@@ -25,7 +24,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       ",
       provider => powershell,
       onlyif   => "if( ((Get-ScheduledTask 'sync-gcloud-tools-share-v1') -eq ${null}) -Or ('${overwrite}' -eq 'true')){ exit 0 }else{ exit 1 }",
-      require  => File["C:\\Windows\\Temp\\${temp_filename}.xml"],
+      require  => File["C:\\Windows\\Temp\\${taskname}.xml"],
     }
   }else{
     exec { "Removing task ${taskname}":
