@@ -14,7 +14,6 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       ensure             => file,
       source_permissions => 'ignore',
       source             => $xmlfile,
-      refreshonly        => true,
     } ->
     exec { "Importing task ${taskname}":
       command  => "
