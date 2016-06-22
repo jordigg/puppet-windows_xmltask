@@ -2,14 +2,14 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("valid values for ensure are 'present' or 'absent'")
   }
-  notify {"Temp dir: ${xmltask_temp_dir}":}
+  
   $null  = '$null'
   $false = '$false'
   if ($ensure == 'present') {
     if ($overwrite == true){
       $is_force = '-Force'
     }
-    file {"C:\\Windows\\Temp\\${taskname}.xml":
+    file {"${xmltask_temp_dir}\\${taskname}.xml":
       ensure             => file,
       source_permissions => 'ignore',
       source             => $xmlfile,
@@ -17,7 +17,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
     exec { "Importing task ${taskname}":
       command  => "
         Try{
-          Register-ScheduledTask -Xml (get-content 'C:\\Windows\\Temp\\${taskname}.xml' | out-string) -TaskName '${taskname}' ${is_force}
+          Register-ScheduledTask -Xml (get-content '${xmltask_temp_dir}\\${taskname}.xml' | out-string) -TaskName '${taskname}' ${is_force}
         }
         Catch{
           exit 0
@@ -25,7 +25,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
       ",
       provider => powershell,
       onlyif   => "if( ((Get-ScheduledTask '${taskname}') -eq ${null}) -Or ('${overwrite}' -eq 'true')){ exit 0 }else{ exit 1 }",
-      require  => File["C:\\Windows\\Temp\\${taskname}.xml"],
+      require  => File["${xmltask_temp_dir}\\${taskname}.xml"],
     }
   }else{
     exec { "Removing task ${taskname}":
