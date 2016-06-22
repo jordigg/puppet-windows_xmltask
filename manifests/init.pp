@@ -2,7 +2,7 @@ define windows_xmltask($taskname = $title, $xmlfile, $overwrite = false, $ensure
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("valid values for ensure are 'present' or 'absent'")
   }
-  notify {"Temp dir: $::{xmltask_temp_dir}":}
+  notify {"Temp dir: ${xmltask_temp_dir}":}
   $null  = '$null'
   $false = '$false'
   if ($ensure == 'present') {
