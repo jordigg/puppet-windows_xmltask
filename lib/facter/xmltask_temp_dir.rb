@@ -25,7 +25,7 @@ Facter.add('xmltask_temp_dir') do
         end
       end
       
-      value
+      value || 'C:\Windows\Temp'
     end
   end
 end
