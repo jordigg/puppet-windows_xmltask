@@ -22,14 +22,14 @@ define windows_xmltask(
     exec { "Importing task ${taskname}":
       command  => "
         Try{
-          Register-ScheduledTask -Xml (get-content '${xmltask_temp_dir}\\${taskname}.xml' | out-string) -TaskName '${taskname}' ${is_force}
+          Register-ScheduledTask -Xml (get-content '${xmltask_temp_dir}/${taskname}.xml' | out-string) -TaskName '${taskname}' ${is_force}
         }
         Catch{
           exit 0
         }
       ",
       provider => powershell,
-      onlyif   => "if ((Get-ScheduledTask | where TaskName -eq '${taskname}') -Or ('${overwrite}' -eq 'true')) { exit 0 } else { exit 1 }",
+      unless   => "if ((Get-ScheduledTask | where TaskName -eq '${taskname}') -Or ('${overwrite}' -eq 'true')) { exit 0 } else { exit 1 }",
       require  => File["${xmltask_temp_dir}\\${taskname}.xml"],
     }
   }else{
@@ -43,7 +43,7 @@ define windows_xmltask(
         }
       ",
       provider => powershell,
-      onlyif   => "if (Get-ScheduledTask | where TaskName -eq '${taskname}') { exit 0 } else { exit 1 }",
+      unless   => "if (Get-ScheduledTask | where TaskName -eq '${taskname}') { exit 0 } else { exit 1 }",
     }
   }
 }
