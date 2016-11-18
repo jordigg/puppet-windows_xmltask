@@ -29,7 +29,7 @@ define windows_xmltask(
         }
       ",
       provider => powershell,
-      onlyif   => "if( ((Get-ScheduledTask '${taskname}') -eq ${null}) -Or ('${overwrite}' -eq 'true')){ exit 0 }else{ exit 1 }",
+      onlyif   => "if ((Get-ScheduledTask | where TaskName -eq '${taskname}') -Or ('${overwrite}' -eq 'true')) { exit 0 } else { exit 1 }",
       require  => File["${xmltask_temp_dir}\\${taskname}.xml"],
     }
   }else{
@@ -43,7 +43,7 @@ define windows_xmltask(
         }
       ",
       provider => powershell,
-      onlyif   => "Get-ScheduledTask '${taskname}'",
+      onlyif   => "if (Get-ScheduledTask | where TaskName -eq '${taskname}') { exit 0 } else { exit 1 }",
     }
   }
 }
